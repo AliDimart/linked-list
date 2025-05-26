@@ -4,6 +4,6 @@ project(LinkedList)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF) #запрещает использовать нестандартные расширения, не работающие на всех компиляторах 
+set(CMAKE_CXX_EXTENSIONS OFF) #запрещает использовать нестандартные расширения, неработающие на всех компиляторах 
 
 add_executable(LinkedList src/main.cpp)
