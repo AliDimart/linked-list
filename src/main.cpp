@@ -36,49 +36,42 @@ private:
 
 	int size;
 	Node* head;
+	Node* tail; // Для константного добавления элементов не только в начало, но и в конец 
 };
 
 template<typename T>
 List<T>::List() {
 	head = nullptr;
+	tail = nullptr;
 	size = 0;
 }
 
 template<typename T>
 void List<T>::push_front(T data) {
 	head = new Node(data, head);
+	if (tail == nullptr) tail = head;
 	size++;
 }
 
 template<typename T>
 void List<T>::Print() {
-	Node* currunt = head;
-	while (currunt != nullptr) {
-		std::cout << currunt->data << std::endl;
-		currunt = currunt->ptrNext;
+	Node* current = head;
+	while (current != nullptr) {
+		std::cout << current->data << std::endl;
+		current = current->ptrNext;
 	}
 }
 
 template<typename T>
 void List<T>::push_back(T data) {
-	if (head == nullptr) {
-
-		head = new Node(data);
+	if (tail == nullptr) {
+		head = tail = new Node(data);
 	}
 	else {
-		Node* currunt = head;
-
-		while (currunt->ptrNext != nullptr) {
-			currunt = currunt->ptrNext;
-		}
-		currunt->ptrNext = new Node(data);
+		tail->ptrNext = new Node(data);
+		tail = tail->ptrNext;
 	}
 	size++;
-}
-
-template<typename T>
-void List<T>::pop_back() {
-	remove(size - 1);
 }
 
 template<typename T>
@@ -87,6 +80,7 @@ void List<T>::pop_front() {
 	Node* temp = head->ptrNext;
 	delete head;
 	head = temp;
+	if (head == nullptr) tail = nullptr;
 	size--;
 }
 
@@ -102,14 +96,14 @@ typename List<T>::Node* List<T>::GetNode(const int index) {
 
 	if (index < 0 || index >= size) throw std::exception("Index out of range");
 
-	Node* currunt = head; int curruntIndex = 0;
+	Node* current = head; int currentIndex = 0;
 
-	while (curruntIndex != index) {
+	while (currentIndex != index) {
 
-		currunt = currunt->ptrNext;
-		curruntIndex++;
+		current = current->ptrNext;
+		currentIndex++;
 	}
-	return currunt;
+	return current;
 }
 
 template<typename T>
@@ -120,13 +114,13 @@ T& List<T>::operator[](const int index) {
 template<typename T>
 void List<T>::insert(T data, const int index) {
 
-	if (index < 0 || index >= size) throw std::exception("Index out of range");
+	if (index < 0 || index > size) throw std::exception("Index out of range");
 
 	if (index == 0) push_front(data);
 	else {
-		Node* currunt = GetNode(index - 1);
+		Node* current = GetNode(index - 1);
 
-		currunt->ptrNext = new Node(data, currunt->ptrNext);
+		current->ptrNext = new Node(data, current->ptrNext);
 		size++;
 	}
 }
@@ -137,13 +131,19 @@ void List<T>::remove(const int index) {
 
 	if (index == 0) pop_front();
 	else {
-		Node* currunt = GetNode(index - 1);
-		Node* toDelete = currunt->ptrNext;
+		Node* current = GetNode(index - 1);
+		Node* toDelete = current->ptrNext;
 
-		currunt->ptrNext = toDelete->ptrNext;
+		current->ptrNext = toDelete->ptrNext;
 		delete toDelete;
+		if (current->ptrNext == nullptr) tail = current; // Если удалили последний элемент 
 		size--;
 	}
+}
+
+template<typename T>
+void List<T>::pop_back() {
+	remove(size - 1);
 }
 
 template<typename T>
@@ -151,10 +151,34 @@ List<T>::~List() {
 	clear();
 }
 
+template<typename T>
+class Queue {
+public:
+
+	Queue() = default;
+	~Queue() = default;
+	void push(const T value);
+	T pop();
+
+private:
+	List<T> l;
+};
+
+template<typename T>
+void Queue<T>::push(const T value) {
+	l.push_back(value);
+}
+
+template<typename T>
+T Queue<T>::pop() {
+	T temp = l[0];
+	l.pop_front();
+	return temp;
+}
+
+
 int main()
 {
-	//int(*searchPtr)(const std::vector<int> arr, const int target); //указатель на функцию 
-
 	List<int> lst;
 
 	lst.push_back(17);
@@ -164,7 +188,7 @@ int main()
 	lst.Print();
 	std::cout << std::endl << "Insert" << std::endl;
 
-	lst.insert(15, 1);
+	lst.insert(15, 3);
 	lst.Print();
 
 	std::cout << std::endl << "pop_back" << std::endl;
