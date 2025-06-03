@@ -7,3 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF) #запрещает использовать нестандартные расширения, неработающие на всех компиляторах 
 
 add_executable(LinkedList src/main.cpp)
+
+target_include_directories(LinkedList PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
